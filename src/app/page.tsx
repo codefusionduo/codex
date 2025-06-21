@@ -12,6 +12,7 @@ export default function NovaAppMakerPage() {
     const [description, setDescription] = useState('');
     const [generatedCode, setGeneratedCode] = useState('');
     const [isLoading, setIsLoading] = useState(false);
+    const [previewKey, setPreviewKey] = useState(0);
     const { toast } = useToast();
 
     const handleGenerate = useCallback(async () => {
@@ -28,6 +29,7 @@ export default function NovaAppMakerPage() {
         try {
             const result = await generateAppCode({ appDescription: description });
             setGeneratedCode(result.appCode);
+            setPreviewKey(prev => prev + 1);
         } catch (error) {
             console.error(error);
             toast({
@@ -52,6 +54,10 @@ export default function NovaAppMakerPage() {
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }, [generatedCode]);
+    
+    const handleRefreshPreview = useCallback(() => {
+        setPreviewKey(prev => prev + 1);
+    }, []);
 
     return (
         <div className="grid md:grid-cols-2 lg:grid-cols-[minmax(400px,_1fr)_2fr] h-dvh bg-background text-foreground">
@@ -100,7 +106,7 @@ export default function NovaAppMakerPage() {
             </aside>
 
             <main className="flex-1 flex items-center justify-center p-4 md:p-6 bg-muted/30 h-full overflow-hidden">
-                <div className="w-full h-full rounded-xl bg-white shadow-inner border border-border overflow-hidden">
+                <div className="relative w-full h-full rounded-xl bg-white shadow-inner border border-border overflow-hidden">
                     {isLoading ? (
                         <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground animate-in fade-in duration-500">
                             <Loader2 className="h-12 w-12 animate-spin text-primary" />
@@ -108,13 +114,24 @@ export default function NovaAppMakerPage() {
                             <p className="text-sm">The AI is warming up. This may take a moment.</p>
                         </div>
                     ) : generatedCode ? (
-                        <iframe
-                            srcDoc={generatedCode}
-                            title="App Preview"
-                            className="w-full h-full border-0 animate-in fade-in duration-500"
-                            sandbox="allow-scripts allow-same-origin"
-                            key={Date.now()}
-                        />
+                        <>
+                            <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                onClick={handleRefreshPreview} 
+                                className="absolute top-2 right-2 z-10"
+                                aria-label="Refresh preview"
+                            >
+                                <RefreshCw className="h-4 w-4" />
+                            </Button>
+                            <iframe
+                                srcDoc={generatedCode}
+                                title="App Preview"
+                                className="w-full h-full border-0 animate-in fade-in duration-500"
+                                sandbox="allow-scripts allow-same-origin"
+                                key={previewKey}
+                            />
+                        </>
                     ) : (
                         <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground p-8 animate-in fade-in duration-500">
                            <div className="w-24 h-24 bg-accent/10 rounded-full flex items-center justify-center border-8 border-accent/20">
