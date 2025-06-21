@@ -4,8 +4,10 @@ import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Download, Loader2, Code2, RefreshCw, PenTool } from 'lucide-react';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Sparkles, Download, Loader2, Code2, RefreshCw, PenTool, Wand2 } from 'lucide-react';
 import { generateAppCode } from '@/ai/flows/generate-app-code';
+import { improveAppCode } from '@/ai/flows/improve-app-code';
 import { useToast } from '@/hooks/use-toast';
 import { DrawingView } from '@/components/drawing-view';
 
@@ -15,6 +17,7 @@ export default function NovaAppMakerPage() {
     const [isLoading, setIsLoading] = useState(false);
     const [previewKey, setPreviewKey] = useState(0);
     const [isDrawingMode, setIsDrawingMode] = useState(false);
+    const [mode, setMode] = useState<'generate' | 'improve'>('generate');
     const { toast } = useToast();
 
     const handleGenerate = useCallback(async () => {
@@ -44,6 +47,40 @@ export default function NovaAppMakerPage() {
         }
     }, [description, toast]);
 
+    const handleImprove = useCallback(async () => {
+        if (!description.trim()) {
+            toast({
+                title: 'Instructions are empty',
+                description: 'Please describe the improvements you want to make.',
+                variant: 'destructive',
+            });
+            return;
+        }
+        if (!generatedCode) {
+            toast({
+                title: 'No code to improve',
+                description: 'Please generate an app first before trying to improve it.',
+                variant: 'destructive',
+            });
+            return;
+        }
+        setIsLoading(true);
+        try {
+            const result = await improveAppCode({ appDescription: description, currentCode: generatedCode });
+            setGeneratedCode(result.improvedCode);
+            setPreviewKey(prev => prev + 1);
+        } catch (error) {
+            console.error(error);
+            toast({
+                title: 'Error Improving App',
+                description: 'An unexpected error occurred. Please try again later.',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    }, [description, generatedCode, toast]);
+
     const handleDownload = useCallback(() => {
         if (!generatedCode) return;
         const blob = new Blob([generatedCode], { type: 'text/html' });
@@ -61,9 +98,23 @@ export default function NovaAppMakerPage() {
         setPreviewKey(prev => prev + 1);
     }, []);
 
+    const handleModeChange = (newMode: string) => {
+        setMode(newMode as 'generate' | 'improve');
+        setDescription('');
+    }
+
     if (isDrawingMode) {
         return <DrawingView onCancel={() => setIsDrawingMode(false)} />;
     }
+
+    const currentHandler = mode === 'generate' ? handleGenerate : handleImprove;
+    const buttonText = mode === 'generate' ? 'Generate App' : 'Improve App';
+    const buttonIcon = mode === 'generate' ? <Sparkles className="mr-2 h-4 w-4" /> : <Wand2 className="mr-2 h-4 w-4" />;
+    const cardTitle = mode === 'generate' ? 'Describe Your App' : 'Describe Your Improvements';
+    const cardDescriptionText = mode === 'generate' ? 'Enter a description of the application you want to build. Be as detailed as you like.' : 'Describe the changes you want to make to the current app.';
+    const placeholderText = mode === 'generate' 
+        ? "e.g., A simple to-do list app with a field to add tasks and a button to mark them as complete."
+        : "e.g., Change the background color to dark blue and add a title.";
 
     return (
         <div className="grid md:grid-cols-2 lg:grid-cols-[minmax(400px,_1fr)_2fr] h-dvh bg-background text-foreground">
@@ -75,11 +126,18 @@ export default function NovaAppMakerPage() {
                     <h1 className="text-2xl font-bold font-headline">Nova App Maker</h1>
                 </header>
 
-                <Card className="flex flex-col shadow-sm">
-                    <CardHeader className="flex flex-row items-center justify-between">
+                <Tabs defaultValue="generate" onValueChange={handleModeChange} className="w-full">
+                    <TabsList className="grid w-full grid-cols-2">
+                        <TabsTrigger value="generate">Generate</TabsTrigger>
+                        <TabsTrigger value="improve" disabled={!generatedCode}>Improve</TabsTrigger>
+                    </TabsList>
+                </Tabs>
+
+                <Card className="flex flex-col shadow-sm flex-1">
+                    <CardHeader className="flex flex-row items-start justify-between">
                         <div className="space-y-1.5">
-                            <CardTitle>Describe Your App</CardTitle>
-                            <CardDescription>Enter a description of the application you want to build. Be as detailed as you like.</CardDescription>
+                            <CardTitle>{cardTitle}</CardTitle>
+                            <CardDescription>{cardDescriptionText}</CardDescription>
                         </div>
                         <Button variant="ghost" size="icon" onClick={() => setDescription('')} aria-label="Clear prompt" className="shrink-0">
                             <RefreshCw className="h-4 w-4" />
@@ -87,7 +145,7 @@ export default function NovaAppMakerPage() {
                     </CardHeader>
                     <CardContent className="flex-1 flex">
                         <Textarea
-                            placeholder="e.g., A simple to-do list app with a field to add tasks and a button to mark them as complete."
+                            placeholder={placeholderText}
                             className="flex-1 resize-none font-code"
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
@@ -95,13 +153,13 @@ export default function NovaAppMakerPage() {
                         />
                     </CardContent>
                     <CardFooter className="flex flex-col sm:flex-row gap-2">
-                        <Button onClick={handleGenerate} disabled={isLoading || !description} className="w-full sm:w-auto flex-1 sm:flex-none">
+                        <Button onClick={currentHandler} disabled={isLoading || !description} className="w-full sm:w-auto flex-1 sm:flex-none">
                             {isLoading ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             ) : (
-                                <Sparkles className="mr-2 h-4 w-4" />
+                                buttonIcon
                             )}
-                            Generate App
+                            {buttonText}
                         </Button>
                         <Button onClick={handleDownload} variant="outline" disabled={!generatedCode || isLoading} className="w-full sm:w-auto">
                             <Download className="mr-2 h-4 w-4" />
@@ -128,8 +186,8 @@ export default function NovaAppMakerPage() {
                     {isLoading ? (
                         <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground animate-in fade-in duration-500">
                             <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                            <p className="text-lg font-semibold">Generating your masterpiece...</p>
-                            <p className="text-sm">The AI is warming up. This may take a moment.</p>
+                            <p className="text-lg font-semibold">Working on it...</p>
+                            <p className="text-sm">The AI is thinking. This may take a moment.</p>
                         </div>
                     ) : generatedCode ? (
                         <>
@@ -157,7 +215,7 @@ export default function NovaAppMakerPage() {
                            </div>
                            <h2 className="text-2xl font-semibold">App Preview</h2>
                            <p className="max-w-md text-center text-sm">
-                                Your generated app will appear here. Describe your vision on the left, click 'Generate App', and watch it come to life.
+                                Your generated app will appear here. Describe your vision, click 'Generate App', and watch it come to life.
                            </p>
                         </div>
                     )}
