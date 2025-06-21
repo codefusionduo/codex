@@ -7,12 +7,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Sparkles, Download, Loader2, Code2, RefreshCw, PenTool } from 'lucide-react';
 import { generateAppCode } from '@/ai/flows/generate-app-code';
 import { useToast } from '@/hooks/use-toast';
+import { DrawingView } from '@/components/drawing-view';
 
 export default function NovaAppMakerPage() {
     const [description, setDescription] = useState('');
     const [generatedCode, setGeneratedCode] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [previewKey, setPreviewKey] = useState(0);
+    const [isDrawingMode, setIsDrawingMode] = useState(false);
     const { toast } = useToast();
 
     const handleGenerate = useCallback(async () => {
@@ -58,6 +60,10 @@ export default function NovaAppMakerPage() {
     const handleRefreshPreview = useCallback(() => {
         setPreviewKey(prev => prev + 1);
     }, []);
+
+    if (isDrawingMode) {
+        return <DrawingView onCancel={() => setIsDrawingMode(false)} />;
+    }
 
     return (
         <div className="grid md:grid-cols-2 lg:grid-cols-[minmax(400px,_1fr)_2fr] h-dvh bg-background text-foreground">
@@ -109,7 +115,7 @@ export default function NovaAppMakerPage() {
                         <CardTitle>Features</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <Button variant="outline" className="w-full">
+                        <Button variant="outline" className="w-full" onClick={() => setIsDrawingMode(true)}>
                             <PenTool className="mr-2 h-4 w-4" />
                             Draw
                         </Button>
