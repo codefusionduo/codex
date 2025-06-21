@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Download, Loader2, Code2, RefreshCw } from 'lucide-react';
+import { Sparkles, Download, Loader2, Code2, RefreshCw, PenTool } from 'lucide-react';
 import { generateAppCode } from '@/ai/flows/generate-app-code';
 import { useToast } from '@/hooks/use-toast';
 
@@ -109,9 +109,10 @@ export default function NovaAppMakerPage() {
                         <CardTitle>Features</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-sm text-muted-foreground">
-                            More features will be added here soon.
-                        </p>
+                        <Button variant="outline" className="w-full">
+                            <PenTool className="mr-2 h-4 w-4" />
+                            Draw
+                        </Button>
                     </CardContent>
                 </Card>
             </aside>
