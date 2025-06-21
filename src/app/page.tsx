@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Download, Loader2, Code2 } from 'lucide-react';
+import { Sparkles, Download, Loader2, Code2, RefreshCw } from 'lucide-react';
 import { generateAppCode } from '@/ai/flows/generate-app-code';
 import { useToast } from '@/hooks/use-toast';
 
@@ -64,9 +64,14 @@ export default function NovaAppMakerPage() {
                 </header>
 
                 <Card className="flex-1 flex flex-col shadow-sm">
-                    <CardHeader>
-                        <CardTitle>Describe Your App</CardTitle>
-                        <CardDescription>Enter a description of the application you want to build. Be as detailed as you like.</CardDescription>
+                    <CardHeader className="flex flex-row items-center justify-between">
+                        <div className="space-y-1.5">
+                            <CardTitle>Describe Your App</CardTitle>
+                            <CardDescription>Enter a description of the application you want to build. Be as detailed as you like.</CardDescription>
+                        </div>
+                        <Button variant="ghost" size="icon" onClick={() => setDescription('')} aria-label="Clear prompt" className="shrink-0">
+                            <RefreshCw className="h-4 w-4" />
+                        </Button>
                     </CardHeader>
                     <CardContent className="flex-1 flex">
                         <Textarea
