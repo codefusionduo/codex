@@ -69,7 +69,7 @@ export default function NovaAppMakerPage() {
                     <h1 className="text-2xl font-bold font-headline">Nova App Maker</h1>
                 </header>
 
-                <Card className="flex-1 flex flex-col shadow-sm">
+                <Card className="flex flex-col shadow-sm">
                     <CardHeader className="flex flex-row items-center justify-between">
                         <div className="space-y-1.5">
                             <CardTitle>Describe Your App</CardTitle>
@@ -102,6 +102,17 @@ export default function NovaAppMakerPage() {
                             Download Code
                         </Button>
                     </CardFooter>
+                </Card>
+
+                <Card className="shadow-sm">
+                    <CardHeader>
+                        <CardTitle>Features</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <p className="text-sm text-muted-foreground">
+                            More features will be added here soon.
+                        </p>
+                    </CardContent>
                 </Card>
             </aside>
 
