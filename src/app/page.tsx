@@ -235,18 +235,6 @@ export default function NovaAppMakerPage() {
                         </Button>
                     </CardFooter>
                 </Card>
-
-                <Card className="shadow-sm">
-                    <CardHeader>
-                        <CardTitle>Features</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <Button variant="outline" className="w-full" onClick={() => setIsDrawingMode(true)}>
-                            <PenTool className="mr-2 h-4 w-4" />
-                            Draw
-                        </Button>
-                    </CardContent>
-                </Card>
             </aside>
 
             <main className="flex-1 flex flex-col p-4 md:p-6 bg-muted/30 h-full overflow-hidden">
@@ -274,10 +262,10 @@ export default function NovaAppMakerPage() {
                             </Button>
                         </div>
                         <div className="grid grid-rows-2 gap-4 flex-1 min-h-0">
-                            <div className="relative rounded-xl shadow-inner border border-border overflow-hidden bg-muted/30">
+                            <div className="relative rounded-xl shadow-inner border border-border overflow-hidden bg-transparent">
                                 <Tldraw onMount={setEditor} />
                             </div>
-                            <div className="relative w-full h-full rounded-xl shadow-inner border border-border overflow-hidden bg-muted/30">
+                            <div className="relative w-full h-full rounded-xl shadow-inner border border-border overflow-hidden bg-transparent">
                                 {generatedCode ? (
                                     <>
                                         <Button 
@@ -312,44 +300,53 @@ export default function NovaAppMakerPage() {
                         </div>
                     </>
                 ) : (
-                    <div className="relative w-full h-full rounded-xl shadow-inner border border-border overflow-hidden bg-muted/30">
-                        {isLoading ? (
-                            <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground animate-in fade-in duration-500">
-                                <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                                <p className="text-lg font-semibold">Working on it...</p>
-                                <p className="text-sm">The AI is thinking. This may take a moment.</p>
-                            </div>
-                        ) : generatedCode ? (
-                            <>
-                                <Button 
-                                    variant="ghost" 
-                                    size="icon" 
-                                    onClick={handleRefreshPreview} 
-                                    className="absolute top-2 right-2 z-10"
-                                    aria-label="Refresh preview"
-                                >
-                                    <RefreshCw className="h-4 w-4" />
-                                </Button>
-                                <iframe
-                                    srcDoc={generatedCode}
-                                    title="App Preview"
-                                    className="w-full h-full border-0 animate-in fade-in duration-500"
-                                    sandbox="allow-scripts allow-same-origin"
-                                    key={previewKey}
-                                />
-                            </>
-                        ) : (
-                            <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground p-8 animate-in fade-in duration-500">
-                               <div className="w-24 h-24 bg-accent/10 rounded-full flex items-center justify-center border-8 border-accent/20">
-                                 <Sparkles className="h-12 w-12 text-accent" />
-                               </div>
-                               <h2 className="text-2xl font-semibold">App Preview</h2>
-                               <p className="max-w-md text-center text-sm">
-                                    Your generated app will appear here. Describe your vision, click 'Generate App', and watch it come to life.
-                               </p>
-                            </div>
-                        )}
-                    </div>
+                    <>
+                        <div className="flex justify-between items-center mb-4">
+                            <h2 className="text-xl font-semibold">App Preview</h2>
+                             <Button variant="outline" onClick={() => setIsDrawingMode(true)}>
+                                <PenTool className="mr-2 h-4 w-4" />
+                                Draw
+                            </Button>
+                        </div>
+                        <div className="relative w-full h-full rounded-xl shadow-inner border border-border overflow-hidden bg-transparent">
+                            {isLoading ? (
+                                <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground animate-in fade-in duration-500">
+                                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                                    <p className="text-lg font-semibold">Working on it...</p>
+                                    <p className="text-sm">The AI is thinking. This may take a moment.</p>
+                                </div>
+                            ) : generatedCode ? (
+                                <>
+                                    <Button 
+                                        variant="ghost" 
+                                        size="icon" 
+                                        onClick={handleRefreshPreview} 
+                                        className="absolute top-2 right-2 z-10"
+                                        aria-label="Refresh preview"
+                                    >
+                                        <RefreshCw className="h-4 w-4" />
+                                    </Button>
+                                    <iframe
+                                        srcDoc={generatedCode}
+                                        title="App Preview"
+                                        className="w-full h-full border-0 animate-in fade-in duration-500"
+                                        sandbox="allow-scripts allow-same-origin"
+                                        key={previewKey}
+                                    />
+                                </>
+                            ) : (
+                                <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground p-8 animate-in fade-in duration-500">
+                                   <div className="w-24 h-24 bg-accent/10 rounded-full flex items-center justify-center border-8 border-accent/20">
+                                     <Sparkles className="h-12 w-12 text-accent" />
+                                   </div>
+                                   <h2 className="text-2xl font-semibold">App Preview</h2>
+                                   <p className="max-w-md text-center text-sm">
+                                        Your generated app will appear here. Describe your vision, click 'Generate App', and watch it come to life.
+                                   </p>
+                                </div>
+                            )}
+                        </div>
+                    </>
                 )}
             </main>
         </div>
