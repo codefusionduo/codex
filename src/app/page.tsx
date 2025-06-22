@@ -188,28 +188,25 @@ export default function NovaAppMakerPage() {
             <main className="flex-1 flex items-center justify-center p-4 md:p-6 bg-muted/30 h-full overflow-hidden">
                 {isDrawingMode ? (
                      <div className="w-full h-full flex flex-col gap-4">
-                        <div className="flex justify-between items-center shrink-0">
-                            <h2 className="text-xl font-semibold">Draw your UI</h2>
+                        <div className="flex justify-between items-center shrink-0 gap-4">
+                            <h2 className="text-xl font-semibold whitespace-nowrap">Draw your UI</h2>
+                            <div className="flex items-center gap-2 w-full max-w-lg mx-auto">
+                                <Input 
+                                    placeholder="Additional instructions (optional)" 
+                                    value={drawingInstructions}
+                                    onChange={(e) => setDrawingInstructions(e.target.value)}
+                                />
+                                <Button onClick={handleSendDrawing}>
+                                    Send Drawing
+                                    <Send className="ml-2 h-4 w-4" />
+                                </Button>
+                            </div>
                             <Button variant="outline" onClick={() => setIsDrawingMode(false)}>
                                 Back to Preview
                             </Button>
                         </div>
                         <div className="relative flex-1 rounded-xl bg-white shadow-inner border border-border overflow-hidden">
-                            <Tldraw>
-                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-full max-w-md px-4 z-10">
-                                    <Card className="p-3 flex items-center gap-2 shadow-lg">
-                                        <Input 
-                                            placeholder="Additional instructions (optional)" 
-                                            value={drawingInstructions}
-                                            onChange={(e) => setDrawingInstructions(e.target.value)}
-                                        />
-                                        <Button onClick={handleSendDrawing}>
-                                            Send Drawing
-                                            <Send className="ml-2 h-4 w-4" />
-                                        </Button>
-                                    </Card>
-                                </div>
-                            </Tldraw>
+                            <Tldraw />
                         </div>
                     </div>
                 ) : (
