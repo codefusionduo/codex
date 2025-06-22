@@ -130,7 +130,6 @@ export default function NovaAppMakerPage() {
         }
     
         setIsLoading(true);
-        setGeneratedCode('');
         
         try {
             const svg = await editor.getSvg(shapes);
@@ -164,7 +163,6 @@ export default function NovaAppMakerPage() {
     
             setGeneratedCode(result.appCode);
             setPreviewKey(prev => prev + 1);
-            setIsDrawingMode(false);
         } catch (error) {
             console.error(error);
             toast({
@@ -251,10 +249,10 @@ export default function NovaAppMakerPage() {
                 </Card>
             </aside>
 
-            <main className="flex-1 flex items-center justify-center p-4 md:p-6 bg-muted/30 h-full overflow-hidden">
+            <main className="flex-1 flex flex-col p-4 md:p-6 bg-muted/30 h-full overflow-hidden">
                 {isDrawingMode ? (
-                     <div className="w-full h-full flex flex-col gap-4">
-                        <div className="flex justify-between items-center shrink-0 gap-4">
+                     <>
+                        <div className="flex justify-between items-center shrink-0 gap-4 mb-4">
                             <h2 className="text-xl font-semibold whitespace-nowrap">Draw your UI</h2>
                             <div className="flex items-center gap-2 w-full max-w-lg mx-auto">
                                 <Input 
@@ -275,10 +273,44 @@ export default function NovaAppMakerPage() {
                                 Back to Preview
                             </Button>
                         </div>
-                        <div className="relative flex-1 rounded-xl shadow-inner border border-border overflow-hidden bg-muted/30">
-                            <Tldraw onMount={setEditor} />
+                        <div className="grid grid-rows-2 gap-4 flex-1 min-h-0">
+                            <div className="relative rounded-xl shadow-inner border border-border overflow-hidden bg-muted/30">
+                                <Tldraw onMount={setEditor} />
+                            </div>
+                            <div className="relative w-full h-full rounded-xl shadow-inner border border-border overflow-hidden bg-muted/30">
+                                {generatedCode ? (
+                                    <>
+                                        <Button 
+                                            variant="ghost" 
+                                            size="icon" 
+                                            onClick={handleRefreshPreview} 
+                                            className="absolute top-2 right-2 z-10"
+                                            aria-label="Refresh preview"
+                                        >
+                                            <RefreshCw className="h-4 w-4" />
+                                        </Button>
+                                        <iframe
+                                            srcDoc={generatedCode}
+                                            title="App Preview"
+                                            className="w-full h-full border-0 animate-in fade-in duration-500"
+                                            sandbox="allow-scripts allow-same-origin"
+                                            key={previewKey}
+                                        />
+                                    </>
+                                ) : (
+                                    <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground p-8 animate-in fade-in duration-500">
+                                       <div className="w-16 h-16 bg-accent/10 rounded-full flex items-center justify-center border-8 border-accent/20">
+                                         <Sparkles className="h-8 w-8 text-accent" />
+                                       </div>
+                                       <h2 className="text-xl font-semibold">App Preview</h2>
+                                       <p className="max-w-md text-center text-sm">
+                                            The generated app will appear here.
+                                       </p>
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                    </div>
+                    </>
                 ) : (
                     <div className="relative w-full h-full rounded-xl shadow-inner border border-border overflow-hidden bg-muted/30">
                         {isLoading ? (
