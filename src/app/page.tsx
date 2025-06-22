@@ -117,12 +117,21 @@ export default function NovaAppMakerPage() {
             });
             return;
         }
+
+        if (editor.getCurrentPageShapes().length === 0) {
+            toast({
+                title: 'Empty Drawing',
+                description: 'Please draw something before sending.',
+                variant: 'destructive',
+            });
+            return;
+        }
     
         const svg = await editor.getSvg();
         if (!svg) {
             toast({
-                title: 'Empty Drawing',
-                description: 'Please draw something before sending.',
+                title: 'Error generating drawing',
+                description: 'Could not generate an SVG from the drawing.',
                 variant: 'destructive',
             });
             return;
