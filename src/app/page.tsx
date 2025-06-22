@@ -145,7 +145,9 @@ export default function NovaAppMakerPage() {
     
         try {
             const svgString = new XMLSerializer().serializeToString(svg);
-            const drawingDataUri = `data:image/svg+xml;base64,${btoa(svgString)}`;
+            const drawingDataUri = `data:image/svg+xml;base64,${btoa(
+                unescape(encodeURIComponent(svgString))
+            )}`;
             
             const result = await generateAppFromDrawing({
                 drawingDataUri,
