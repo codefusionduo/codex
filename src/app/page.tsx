@@ -9,9 +9,10 @@ import { Sparkles, Download, Loader2, Code2, RefreshCw, PenTool, Wand2, Send } f
 import { generateAppCode } from '@/ai/flows/generate-app-code';
 import { improveAppCode } from '@/ai/flows/improve-app-code';
 import { useToast } from '@/hooks/use-toast';
-import { Tldraw } from 'tldraw';
+import { Tldraw, type Editor } from 'tldraw';
 import 'tldraw/tldraw.css';
 import { Input } from '@/components/ui/input';
+import { generateAppFromDrawing } from '@/ai/flows/generate-app-from-drawing';
 
 export default function NovaAppMakerPage() {
     const [description, setDescription] = useState('');
@@ -22,6 +23,7 @@ export default function NovaAppMakerPage() {
     const [drawingInstructions, setDrawingInstructions] = useState('');
     const [mode, setMode] = useState<'generate' | 'improve'>('generate');
     const { toast } = useToast();
+    const [editor, setEditor] = useState<Editor | null>(null);
 
     const handleGenerate = useCallback(async () => {
         if (!description.trim()) {
@@ -106,10 +108,53 @@ export default function NovaAppMakerPage() {
         setDescription('');
     }
 
-    const handleSendDrawing = useCallback(() => {
-        // Placeholder for future AI integration
-        alert('This feature is not yet connected to the AI.');
-    }, []);
+    const handleSendDrawing = useCallback(async () => {
+        if (!editor) {
+            toast({
+                title: 'Editor not ready',
+                description: 'Please wait for the drawing canvas to load.',
+                variant: 'destructive',
+            });
+            return;
+        }
+
+        setIsLoading(true);
+        setGeneratedCode('');
+        setIsDrawingMode(false); // Switch back to preview to show loading state
+
+        try {
+            const svg = await editor.getSvg();
+            if (!svg) {
+                toast({
+                    title: 'Empty Drawing',
+                    description: 'Please draw something before sending.',
+                    variant: 'destructive',
+                });
+                setIsLoading(false);
+                return;
+            }
+
+            const svgString = svg.outerHTML;
+            const drawingDataUri = `data:image/svg+xml;base64,${btoa(svgString)}`;
+            
+            const result = await generateAppFromDrawing({
+                drawingDataUri,
+                instructions: drawingInstructions,
+            });
+
+            setGeneratedCode(result.appCode);
+            setPreviewKey(prev => prev + 1);
+        } catch (error) {
+            console.error(error);
+            toast({
+                title: 'Error Generating App from Drawing',
+                description: 'An unexpected error occurred. Please try again later.',
+                variant: 'destructive',
+            });
+        } finally {
+            setIsLoading(false);
+        }
+    }, [editor, drawingInstructions, toast]);
 
     const currentHandler = mode === 'generate' ? handleGenerate : handleImprove;
     const buttonText = mode === 'generate' ? 'Generate App' : 'Improve App';
@@ -196,17 +241,17 @@ export default function NovaAppMakerPage() {
                                     value={drawingInstructions}
                                     onChange={(e) => setDrawingInstructions(e.target.value)}
                                 />
-                                <Button onClick={handleSendDrawing}>
+                                <Button onClick={handleSendDrawing} disabled={isLoading}>
                                     Send Drawing
                                     <Send className="ml-2 h-4 w-4" />
                                 </Button>
                             </div>
-                            <Button variant="outline" onClick={() => setIsDrawingMode(false)}>
+                            <Button variant="outline" onClick={() => setIsDrawingMode(false)} disabled={isLoading}>
                                 Back to Preview
                             </Button>
                         </div>
                         <div className="relative flex-1 rounded-xl bg-white shadow-inner border border-border overflow-hidden">
-                            <Tldraw />
+                            <Tldraw onMount={setEditor} />
                         </div>
                     </div>
                 ) : (

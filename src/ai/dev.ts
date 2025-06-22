@@ -3,3 +3,4 @@ config();
 
 import '@/ai/flows/generate-app-code.ts';
 import '@/ai/flows/improve-app-code.ts';
+import '@/ai/flows/generate-app-from-drawing.ts';
