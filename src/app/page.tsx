@@ -157,8 +157,6 @@ export default function NovaAppMakerPage() {
             
             const drawingDataUri = await toBase64(svgBlob);
             
-            setIsDrawingMode(false);
-
             const result = await generateAppFromDrawing({
                 drawingDataUri,
                 instructions: drawingInstructions,
@@ -166,6 +164,7 @@ export default function NovaAppMakerPage() {
     
             setGeneratedCode(result.appCode);
             setPreviewKey(prev => prev + 1);
+            setIsDrawingMode(false);
         } catch (error) {
             console.error(error);
             toast({
@@ -264,8 +263,12 @@ export default function NovaAppMakerPage() {
                                     onChange={(e) => setDrawingInstructions(e.target.value)}
                                 />
                                 <Button onClick={handleSendDrawing} disabled={isLoading}>
+                                    {isLoading ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Send className="mr-2 h-4 w-4" />
+                                    )}
                                     Send Drawing
-                                    <Send className="ml-2 h-4 w-4" />
                                 </Button>
                             </div>
                             <Button variant="outline" onClick={() => setIsDrawingMode(false)} disabled={isLoading}>
