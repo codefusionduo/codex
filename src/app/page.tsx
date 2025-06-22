@@ -118,7 +118,9 @@ export default function NovaAppMakerPage() {
             return;
         }
 
-        if (editor.getCurrentPageShapes().length === 0) {
+        const shapes = editor.getCurrentPageShapes();
+
+        if (shapes.length === 0) {
             toast({
                 title: 'Empty Drawing',
                 description: 'Please draw something before sending.',
@@ -127,7 +129,7 @@ export default function NovaAppMakerPage() {
             return;
         }
     
-        const svg = await editor.getSvg();
+        const svg = await editor.getSvg(shapes);
         if (!svg) {
             toast({
                 title: 'Error generating drawing',
