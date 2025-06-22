@@ -118,22 +118,21 @@ export default function NovaAppMakerPage() {
             return;
         }
 
+        const svg = await editor.getSvg();
+        if (!svg) {
+            toast({
+                title: 'Empty Drawing',
+                description: 'Please draw something before sending.',
+                variant: 'destructive',
+            });
+            return;
+        }
+
         setIsLoading(true);
         setGeneratedCode('');
         setIsDrawingMode(false); // Switch back to preview to show loading state
 
         try {
-            const svg = await editor.getSvg();
-            if (!svg) {
-                toast({
-                    title: 'Empty Drawing',
-                    description: 'Please draw something before sending.',
-                    variant: 'destructive',
-                });
-                setIsLoading(false);
-                return;
-            }
-
             const svgString = svg.outerHTML;
             const drawingDataUri = `data:image/svg+xml;base64,${btoa(svgString)}`;
             
