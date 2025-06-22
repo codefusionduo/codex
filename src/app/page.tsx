@@ -117,7 +117,7 @@ export default function NovaAppMakerPage() {
             });
             return;
         }
-
+    
         const svg = await editor.getSvg();
         if (!svg) {
             toast({
@@ -127,20 +127,20 @@ export default function NovaAppMakerPage() {
             });
             return;
         }
-
+    
         setIsLoading(true);
         setGeneratedCode('');
-        setIsDrawingMode(false); // Switch back to preview to show loading state
-
+        setIsDrawingMode(false); 
+    
         try {
-            const svgString = svg.outerHTML;
+            const svgString = new XMLSerializer().serializeToString(svg);
             const drawingDataUri = `data:image/svg+xml;base64,${btoa(svgString)}`;
             
             const result = await generateAppFromDrawing({
                 drawingDataUri,
                 instructions: drawingInstructions,
             });
-
+    
             setGeneratedCode(result.appCode);
             setPreviewKey(prev => prev + 1);
         } catch (error) {
