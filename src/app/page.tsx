@@ -241,7 +241,7 @@ export default function NovaAppMakerPage() {
                 {isDrawingMode ? (
                      <>
                         <div className="flex justify-between items-center shrink-0 gap-4 mb-4">
-                            <h2 className="text-xl font-semibold whitespace-nowrap">Draw your UI</h2>
+                            <h2 className="text-xl font-semibold whitespace-nowrap">Draw your App Idea</h2>
                             <div className="flex items-center gap-2 w-full max-w-lg mx-auto">
                                 <Input 
                                     placeholder="Additional instructions (optional)" 
@@ -258,7 +258,7 @@ export default function NovaAppMakerPage() {
                                 </Button>
                             </div>
                             <Button variant="outline" onClick={() => setIsDrawingMode(false)} disabled={isLoading}>
-                                Back to Preview
+                                Back to Full Preview
                             </Button>
                         </div>
                         <div className="grid grid-rows-2 gap-4 flex-1 min-h-0">
@@ -305,7 +305,7 @@ export default function NovaAppMakerPage() {
                             <h2 className="text-xl font-semibold">App Preview</h2>
                              <Button variant="outline" onClick={() => setIsDrawingMode(true)}>
                                 <PenTool className="mr-2 h-4 w-4" />
-                                Draw
+                                Draw an Idea
                             </Button>
                         </div>
                         <div className="relative w-full h-full rounded-xl shadow-inner border border-border overflow-hidden bg-transparent">
