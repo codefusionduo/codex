@@ -129,26 +129,36 @@ export default function NovaAppMakerPage() {
             return;
         }
     
-        const svg = await editor.getSvg(shapes);
-        if (!svg) {
-            toast({
-                title: 'Error generating drawing',
-                description: 'Could not generate an SVG from the drawing.',
-                variant: 'destructive',
-            });
-            return;
-        }
-    
         setIsLoading(true);
         setGeneratedCode('');
-        setIsDrawingMode(false); 
-    
+        
         try {
+            const svg = await editor.getSvg(shapes);
+            if (!svg) {
+                toast({
+                    title: 'Error generating drawing',
+                    description: 'Could not generate an SVG from the drawing.',
+                    variant: 'destructive',
+                });
+                setIsLoading(false);
+                return;
+            }
+
             const svgString = new XMLSerializer().serializeToString(svg);
-            const drawingDataUri = `data:image/svg+xml;base64,${btoa(
-                unescape(encodeURIComponent(svgString))
-            )}`;
+            const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
+
+            const toBase64 = (blob: Blob): Promise<string> =>
+                new Promise((resolve, reject) => {
+                    const reader = new FileReader();
+                    reader.readAsDataURL(blob);
+                    reader.onloadend = () => resolve(reader.result as string);
+                    reader.onerror = (error) => reject(error);
+                });
             
+            const drawingDataUri = await toBase64(svgBlob);
+            
+            setIsDrawingMode(false);
+
             const result = await generateAppFromDrawing({
                 drawingDataUri,
                 instructions: drawingInstructions,
@@ -262,12 +272,12 @@ export default function NovaAppMakerPage() {
                                 Back to Preview
                             </Button>
                         </div>
-                        <div className="relative flex-1 rounded-xl shadow-inner border border-border overflow-hidden">
+                        <div className="relative flex-1 rounded-xl shadow-inner border border-border overflow-hidden bg-muted/30">
                             <Tldraw onMount={setEditor} />
                         </div>
                     </div>
                 ) : (
-                    <div className="relative w-full h-full rounded-xl shadow-inner border border-border overflow-hidden">
+                    <div className="relative w-full h-full rounded-xl shadow-inner border border-border overflow-hidden bg-muted/30">
                         {isLoading ? (
                             <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground animate-in fade-in duration-500">
                                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
