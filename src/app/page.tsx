@@ -262,12 +262,12 @@ export default function NovaAppMakerPage() {
                                 Back to Preview
                             </Button>
                         </div>
-                        <div className="relative flex-1 rounded-xl bg-white shadow-inner border border-border overflow-hidden">
+                        <div className="relative flex-1 rounded-xl shadow-inner border border-border overflow-hidden">
                             <Tldraw onMount={setEditor} />
                         </div>
                     </div>
                 ) : (
-                    <div className="relative w-full h-full rounded-xl bg-white shadow-inner border border-border overflow-hidden">
+                    <div className="relative w-full h-full rounded-xl shadow-inner border border-border overflow-hidden">
                         {isLoading ? (
                             <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground animate-in fade-in duration-500">
                                 <Loader2 className="h-12 w-12 animate-spin text-primary" />
