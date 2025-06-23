@@ -150,38 +150,14 @@ export default function NovaAppMakerPage() {
                             rows={10}
                         />
                     </CardContent>
-                    <CardFooter className="flex flex-col sm:flex-row gap-2">
-                        <Button onClick={currentHandler} disabled={isLoading || !description} className="w-full sm:w-auto flex-1 sm:flex-none">
+                    <CardFooter>
+                        <Button onClick={currentHandler} disabled={isLoading || !description} className="w-full">
                             {isLoading ? (
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                             ) : (
                                 buttonIcon
                             )}
                             {buttonText}
-                        </Button>
-                        {generatedCode && mode === 'generate' && (
-                            <Button onClick={handleGenerate} variant="outline" disabled={isLoading || !description} className="w-full sm:w-auto">
-                                <RefreshCw className="mr-2 h-4 w-4" />
-                                Regenerate
-                            </Button>
-                        )}
-                        {generatedCode && (
-                            <Button
-                                variant="outline"
-                                disabled={isLoading}
-                                onClick={() => setViewMode(prev => prev === 'preview' ? 'code' : 'preview')}
-                                className="w-full sm:w-auto"
-                            >
-                                {viewMode === 'preview' ? (
-                                    <><Code2 className="mr-2 h-4 w-4" /> View Code</>
-                                ) : (
-                                    <><Eye className="mr-2 h-4 w-4" /> View Preview</>
-                                )}
-                            </Button>
-                        )}
-                        <Button onClick={handleDownload} variant="outline" disabled={!generatedCode || isLoading} className="w-full sm:w-auto">
-                            <Download className="mr-2 h-4 w-4" />
-                            Download Code
                         </Button>
                     </CardFooter>
                 </Card>
@@ -193,6 +169,32 @@ export default function NovaAppMakerPage() {
                         <h2 className="text-xl font-semibold">
                             {viewMode === 'preview' ? 'App Preview' : 'Code View'}
                         </h2>
+                        {generatedCode && (
+                            <div className="flex items-center gap-2">
+                                {mode === 'generate' && (
+                                     <Button onClick={handleGenerate} variant="outline" size="sm" disabled={isLoading || !description}>
+                                        <RefreshCw className="mr-2 h-4 w-4" />
+                                        Regenerate
+                                    </Button>
+                                )}
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    disabled={isLoading}
+                                    onClick={() => setViewMode(prev => prev === 'preview' ? 'code' : 'preview')}
+                                >
+                                    {viewMode === 'preview' ? (
+                                        <><Code2 className="mr-2 h-4 w-4" /> View Code</>
+                                    ) : (
+                                        <><Eye className="mr-2 h-4 w-4" /> View Preview</>
+                                    )}
+                                </Button>
+                                <Button onClick={handleDownload} variant="outline" size="sm" disabled={!generatedCode || isLoading}>
+                                    <Download className="mr-2 h-4 w-4" />
+                                    Download
+                                </Button>
+                            </div>
+                        )}
                     </div>
                     <div className="relative w-full flex-1 rounded-xl shadow-inner border border-border overflow-hidden bg-transparent">
                         {isLoading ? (
