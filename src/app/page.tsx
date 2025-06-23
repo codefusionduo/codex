@@ -110,6 +110,8 @@ export default function NovaAppMakerPage() {
             const newViewMode = prev === 'preview' ? 'code' : 'preview';
             if (newViewMode === 'code') {
                 setMode('improve');
+            } else {
+                setMode('generate');
             }
             return newViewMode;
         });
