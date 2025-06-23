@@ -50,6 +50,13 @@ const improveAppCodeFlow = ai.defineFlow(
     name: 'improveAppCodeFlow',
     inputSchema: ImproveAppCodeInputSchema,
     outputSchema: ImproveAppCodeOutputSchema,
+    retry: {
+      maxAttempts: 3,
+      backoff: {
+        delay: '1s',
+        multiplier: 2,
+      },
+    },
   },
   async input => {
     const {output} = await improveAppCodePrompt(input);

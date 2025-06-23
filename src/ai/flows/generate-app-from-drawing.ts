@@ -58,6 +58,13 @@ const generateAppFromDrawingFlow = ai.defineFlow(
     name: 'generateAppFromDrawingFlow',
     inputSchema: GenerateAppFromDrawingInputSchema,
     outputSchema: GenerateAppFromDrawingOutputSchema,
+    retry: {
+      maxAttempts: 3,
+      backoff: {
+        delay: '1s',
+        multiplier: 2,
+      },
+    },
   },
   async input => {
     const {output} = await generateAppFromDrawingPrompt(input);

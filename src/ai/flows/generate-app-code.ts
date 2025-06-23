@@ -47,6 +47,13 @@ const generateAppCodeFlow = ai.defineFlow(
     name: 'generateAppCodeFlow',
     inputSchema: GenerateAppCodeInputSchema,
     outputSchema: GenerateAppCodeOutputSchema,
+    retry: {
+      maxAttempts: 3,
+      backoff: {
+        delay: '1s',
+        multiplier: 2,
+      },
+    },
   },
   async input => {
     const {output} = await generateAppCodePrompt(input);
