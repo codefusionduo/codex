@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, Download, Loader2, Code2, RefreshCw, PenTool, Wand2, Send } from 'lucide-react';
+import { Sparkles, Download, Loader2, Code2, RefreshCw, PenTool, Wand2, Send, Eye } from 'lucide-react';
 import { generateAppCode } from '@/ai/flows/generate-app-code';
 import { improveAppCode } from '@/ai/flows/improve-app-code';
 import { useToast } from '@/hooks/use-toast';
@@ -13,6 +13,7 @@ import { Tldraw, type Editor } from 'tldraw';
 import 'tldraw/tldraw.css';
 import { Input } from '@/components/ui/input';
 import { generateAppFromDrawing } from '@/ai/flows/generate-app-from-drawing';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function NovaAppMakerPage() {
     const [description, setDescription] = useState('');
@@ -22,6 +23,7 @@ export default function NovaAppMakerPage() {
     const [isDrawingMode, setIsDrawingMode] = useState(false);
     const [drawingInstructions, setDrawingInstructions] = useState('');
     const [mode, setMode] = useState<'generate' | 'improve'>('generate');
+    const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
     const { toast } = useToast();
     const [editor, setEditor] = useState<Editor | null>(null);
 
@@ -40,6 +42,7 @@ export default function NovaAppMakerPage() {
             const result = await generateAppCode({ appDescription: description });
             setGeneratedCode(result.appCode);
             setPreviewKey(prev => prev + 1);
+            setViewMode('preview');
         } catch (error) {
             console.error(error);
             toast({
@@ -74,6 +77,7 @@ export default function NovaAppMakerPage() {
             const result = await improveAppCode({ appDescription: description, currentCode: generatedCode });
             setGeneratedCode(result.improvedCode);
             setPreviewKey(prev => prev + 1);
+            setViewMode('preview');
         } catch (error) {
             console.error(error);
             toast({
@@ -164,6 +168,7 @@ export default function NovaAppMakerPage() {
             setGeneratedCode(result.appCode);
             setPreviewKey(prev => prev + 1);
             setIsDrawingMode(false);
+            setViewMode('preview');
         } catch (error) {
             console.error(error);
             toast({
@@ -236,6 +241,20 @@ export default function NovaAppMakerPage() {
                                 Regenerate
                             </Button>
                         )}
+                        {generatedCode && (
+                            <Button
+                                variant="outline"
+                                disabled={isLoading}
+                                onClick={() => setViewMode(prev => prev === 'preview' ? 'code' : 'preview')}
+                                className="w-full sm:w-auto"
+                            >
+                                {viewMode === 'preview' ? (
+                                    <><Code2 className="mr-2 h-4 w-4" /> View Code</>
+                                ) : (
+                                    <><Eye className="mr-2 h-4 w-4" /> View Preview</>
+                                )}
+                            </Button>
+                        )}
                         <Button onClick={handleDownload} variant="outline" disabled={!generatedCode || isLoading} className="w-full sm:w-auto">
                             <Download className="mr-2 h-4 w-4" />
                             Download Code
@@ -275,7 +294,9 @@ export default function NovaAppMakerPage() {
                 ) : (
                     <>
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-semibold">App Preview</h2>
+                            <h2 className="text-xl font-semibold">
+                                {viewMode === 'preview' ? 'App Preview' : 'Code View'}
+                            </h2>
                              <Button variant="outline" onClick={() => setIsDrawingMode(true)}>
                                 <PenTool className="mr-2 h-4 w-4" />
                                 Draw an Idea
@@ -288,7 +309,17 @@ export default function NovaAppMakerPage() {
                                     <p className="text-lg font-semibold">Working on it...</p>
                                     <p className="text-sm">The AI is thinking. This may take a moment.</p>
                                 </div>
-                            ) : generatedCode ? (
+                            ) : !generatedCode ? (
+                                <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground p-8 animate-in fade-in duration-500">
+                                   <div className="w-24 h-24 bg-accent/10 rounded-full flex items-center justify-center border-8 border-accent/20">
+                                     <Sparkles className="h-12 w-12 text-accent" />
+                                   </div>
+                                   <h2 className="text-2xl font-semibold">App Preview</h2>
+                                   <p className="max-w-md text-center text-sm">
+                                        Your generated app will appear here. Describe your vision, click 'Generate App', and watch it come to life.
+                                   </p>
+                                </div>
+                            ) : viewMode === 'preview' ? (
                                 <>
                                     <Button 
                                         variant="ghost" 
@@ -308,15 +339,11 @@ export default function NovaAppMakerPage() {
                                     />
                                 </>
                             ) : (
-                                <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground p-8 animate-in fade-in duration-500">
-                                   <div className="w-24 h-24 bg-accent/10 rounded-full flex items-center justify-center border-8 border-accent/20">
-                                     <Sparkles className="h-12 w-12 text-accent" />
-                                   </div>
-                                   <h2 className="text-2xl font-semibold">App Preview</h2>
-                                   <p className="max-w-md text-center text-sm">
-                                        Your generated app will appear here. Describe your vision, click 'Generate App', and watch it come to life.
-                                   </p>
-                                </div>
+                                <ScrollArea className="h-full w-full bg-background rounded-xl">
+                                    <pre className="p-4 font-code text-sm text-foreground">
+                                        <code>{generatedCode}</code>
+                                    </pre>
+                                </ScrollArea>
                             )}
                         </div>
                     </>
