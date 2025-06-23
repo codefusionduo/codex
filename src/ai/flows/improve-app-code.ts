@@ -51,7 +51,7 @@ const improveAppCodeFlow = ai.defineFlow(
     inputSchema: ImproveAppCodeInputSchema,
     outputSchema: ImproveAppCodeOutputSchema,
     retry: {
-      maxAttempts: 3,
+      maxAttempts: 5,
       backoff: {
         delay: '1s',
         multiplier: 2,
