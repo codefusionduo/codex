@@ -263,36 +263,33 @@ export default function NovaAppMakerPage() {
                 </Card>
             </aside>
 
-            <main className="flex-1 flex flex-col p-4 md:p-6 bg-muted/30 h-full overflow-hidden">
+            <main className="flex-1 flex flex-col bg-muted/30 h-full overflow-hidden">
                 {isDrawingMode ? (
-                     <>
-                        <div className="flex justify-between items-center shrink-0 gap-4 mb-4">
-                            <h2 className="text-xl font-semibold whitespace-nowrap">Draw your App Idea</h2>
-                            <div className="flex items-center gap-2 w-full max-w-lg mx-auto">
+                    <div className="relative w-full h-full">
+                        <Tldraw onMount={setEditor} />
+                        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+                            <Button variant="default" onClick={() => setIsDrawingMode(false)} disabled={isLoading} className="bg-zinc-900 text-zinc-100 hover:bg-zinc-800 shadow-lg">
+                                Cancel
+                            </Button>
+                        </div>
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 w-full max-w-lg px-4">
+                            <div className="flex items-center gap-2 rounded-xl bg-zinc-900/80 p-2 text-white shadow-2xl backdrop-blur-sm">
                                 <Input 
                                     placeholder="Additional instructions (optional)" 
                                     value={drawingInstructions}
                                     onChange={(e) => setDrawingInstructions(e.target.value)}
+                                    className="flex-1 border-0 bg-transparent text-zinc-100 placeholder:text-zinc-400 focus-visible:ring-0 focus-visible:ring-offset-0"
                                 />
-                                <Button onClick={handleSendDrawing} disabled={isLoading}>
-                                    {isLoading ? (
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    ) : (
-                                        <Send className="mr-2 h-4 w-4" />
-                                    )}
+                                <Button onClick={handleSendDrawing} disabled={isLoading} className="whitespace-nowrap bg-blue-600 text-white hover:bg-blue-700">
+                                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                                     Send Drawing
+                                    {!isLoading && <Send className="ml-2 h-4 w-4" />}
                                 </Button>
                             </div>
-                            <Button variant="outline" onClick={() => setIsDrawingMode(false)} disabled={isLoading}>
-                                Back to Full Preview
-                            </Button>
                         </div>
-                        <div className="relative rounded-xl shadow-inner border border-border flex-1 min-h-0 bg-transparent">
-                            <Tldraw onMount={setEditor} />
-                        </div>
-                    </>
+                    </div>
                 ) : (
-                    <>
+                    <div className="p-4 md:p-6 flex flex-col h-full">
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-xl font-semibold">
                                 {viewMode === 'preview' ? 'App Preview' : 'Code View'}
@@ -302,8 +299,8 @@ export default function NovaAppMakerPage() {
                                 Draw an Idea
                             </Button>
                         </div>
-                        <div className="relative w-full h-full rounded-xl shadow-inner border border-border overflow-hidden bg-transparent">
-                            {isLoading ? (
+                        <div className="relative w-full flex-1 rounded-xl shadow-inner border border-border overflow-hidden bg-transparent">
+                            {isLoading && !isDrawingMode ? (
                                 <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground animate-in fade-in duration-500">
                                     <Loader2 className="h-12 w-12 animate-spin text-primary" />
                                     <p className="text-lg font-semibold">Working on it...</p>
@@ -346,7 +343,7 @@ export default function NovaAppMakerPage() {
                                 </ScrollArea>
                             )}
                         </div>
-                    </>
+                    </div>
                 )}
             </main>
         </div>
