@@ -105,6 +105,16 @@ export default function NovaAppMakerPage() {
         setDescription('');
     }
 
+    const handleToggleView = useCallback(() => {
+        setViewMode(prev => {
+            const newViewMode = prev === 'preview' ? 'code' : 'preview';
+            if (newViewMode === 'code') {
+                setMode('improve');
+            }
+            return newViewMode;
+        });
+    }, []);
+
     const currentHandler = mode === 'generate' ? handleGenerate : handleImprove;
     const buttonText = mode === 'generate' ? 'Generate App' : 'Improve App';
     const buttonIcon = mode === 'generate' ? <Sparkles className="mr-2 h-4 w-4" /> : <Wand2 className="mr-2 h-4 w-4" />;
@@ -124,7 +134,7 @@ export default function NovaAppMakerPage() {
                     <h1 className="text-2xl font-bold font-headline">Nova App Maker</h1>
                 </header>
 
-                <Tabs defaultValue="generate" onValueChange={handleModeChange} className="w-full">
+                <Tabs value={mode} onValueChange={handleModeChange} className="w-full">
                     <TabsList className="grid w-full grid-cols-2">
                         <TabsTrigger value="generate">Generate</TabsTrigger>
                         <TabsTrigger value="improve" disabled={!generatedCode}>Improve</TabsTrigger>
@@ -181,7 +191,7 @@ export default function NovaAppMakerPage() {
                                     variant="outline"
                                     size="sm"
                                     disabled={isLoading}
-                                    onClick={() => setViewMode(prev => prev === 'preview' ? 'code' : 'preview')}
+                                    onClick={handleToggleView}
                                 >
                                     {viewMode === 'preview' ? (
                                         <><Code2 className="mr-2 h-4 w-4" /> View Code</>
