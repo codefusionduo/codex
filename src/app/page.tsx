@@ -5,14 +5,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Sparkles, Download, Loader2, Code2, RefreshCw, PenTool, Wand2, Send, Eye } from 'lucide-react';
+import { Sparkles, Download, Loader2, Code2, RefreshCw, Wand2, Eye } from 'lucide-react';
 import { generateAppCode } from '@/ai/flows/generate-app-code';
 import { improveAppCode } from '@/ai/flows/improve-app-code';
 import { useToast } from '@/hooks/use-toast';
-import { Tldraw, type Editor } from 'tldraw';
-import 'tldraw/tldraw.css';
-import { Input } from '@/components/ui/input';
-import { generateAppFromDrawing } from '@/ai/flows/generate-app-from-drawing';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 export default function NovaAppMakerPage() {
@@ -20,12 +16,9 @@ export default function NovaAppMakerPage() {
     const [generatedCode, setGeneratedCode] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [previewKey, setPreviewKey] = useState(0);
-    const [isDrawingMode, setIsDrawingMode] = useState(false);
-    const [drawingInstructions, setDrawingInstructions] = useState('');
     const [mode, setMode] = useState<'generate' | 'improve'>('generate');
     const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
     const { toast } = useToast();
-    const [editor, setEditor] = useState<Editor | null>(null);
 
     const handleGenerate = useCallback(async () => {
         if (!description.trim()) {
@@ -112,75 +105,6 @@ export default function NovaAppMakerPage() {
         setDescription('');
     }
 
-    const handleSendDrawing = useCallback(async () => {
-        if (!editor) {
-            toast({
-                title: 'Editor not ready',
-                description: 'Please wait for the drawing canvas to load.',
-                variant: 'destructive',
-            });
-            return;
-        }
-
-        const shapes = editor.getCurrentPageShapes();
-
-        if (shapes.length === 0) {
-            toast({
-                title: 'Empty Drawing',
-                description: 'Please draw something before sending.',
-                variant: 'destructive',
-            });
-            return;
-        }
-    
-        setIsLoading(true);
-        
-        try {
-            const svg = await editor.getSvg(shapes);
-            if (!svg) {
-                toast({
-                    title: 'Error generating drawing',
-                    description: 'Could not generate an SVG from the drawing.',
-                    variant: 'destructive',
-                });
-                setIsLoading(false);
-                return;
-            }
-
-            const svgString = new XMLSerializer().serializeToString(svg);
-            const svgBlob = new Blob([svgString], { type: 'image/svg+xml' });
-
-            const toBase64 = (blob: Blob): Promise<string> =>
-                new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(blob);
-                    reader.onloadend = () => resolve(reader.result as string);
-                    reader.onerror = (error) => reject(error);
-                });
-            
-            const drawingDataUri = await toBase64(svgBlob);
-            
-            const result = await generateAppFromDrawing({
-                drawingDataUri,
-                instructions: drawingInstructions,
-            });
-    
-            setGeneratedCode(result.appCode);
-            setPreviewKey(prev => prev + 1);
-            setIsDrawingMode(false);
-            setViewMode('preview');
-        } catch (error) {
-            console.error(error);
-            toast({
-                title: 'Error Generating App from Drawing',
-                description: 'An unexpected error occurred. Please try again later.',
-                variant: 'destructive',
-            });
-        } finally {
-            setIsLoading(false);
-        }
-    }, [editor, drawingInstructions, toast]);
-
     const currentHandler = mode === 'generate' ? handleGenerate : handleImprove;
     const buttonText = mode === 'generate' ? 'Generate App' : 'Improve App';
     const buttonIcon = mode === 'generate' ? <Sparkles className="mr-2 h-4 w-4" /> : <Wand2 className="mr-2 h-4 w-4" />;
@@ -264,87 +188,57 @@ export default function NovaAppMakerPage() {
             </aside>
 
             <main className="flex-1 flex flex-col bg-muted/30 h-full overflow-hidden">
-                {isDrawingMode ? (
-                    <div className="relative w-full h-full">
-                        <Tldraw onMount={setEditor} />
-                        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
-                            <Button variant="default" onClick={() => setIsDrawingMode(false)} disabled={isLoading} className="bg-zinc-900 text-zinc-100 hover:bg-zinc-800 shadow-lg">
-                                Cancel
-                            </Button>
-                        </div>
-                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-10 w-full max-w-lg px-4">
-                            <div className="flex items-center gap-2 rounded-xl bg-zinc-900/80 p-2 text-white shadow-2xl backdrop-blur-sm">
-                                <Input 
-                                    placeholder="Additional instructions (optional)" 
-                                    value={drawingInstructions}
-                                    onChange={(e) => setDrawingInstructions(e.target.value)}
-                                    className="flex-1 border-0 bg-transparent text-zinc-100 placeholder:text-zinc-400 focus-visible:ring-0 focus-visible:ring-offset-0"
-                                />
-                                <Button onClick={handleSendDrawing} disabled={isLoading} className="whitespace-nowrap bg-blue-600 text-white hover:bg-blue-700">
-                                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                                    Send Drawing
-                                    {!isLoading && <Send className="ml-2 h-4 w-4" />}
-                                </Button>
+                <div className="p-4 md:p-6 flex flex-col h-full">
+                    <div className="flex justify-between items-center mb-4">
+                        <h2 className="text-xl font-semibold">
+                            {viewMode === 'preview' ? 'App Preview' : 'Code View'}
+                        </h2>
+                    </div>
+                    <div className="relative w-full flex-1 rounded-xl shadow-inner border border-border overflow-hidden bg-transparent">
+                        {isLoading ? (
+                            <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground animate-in fade-in duration-500">
+                                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                                <p className="text-lg font-semibold">Working on it...</p>
+                                <p className="text-sm">The AI is thinking. This may take a moment.</p>
                             </div>
-                        </div>
+                        ) : !generatedCode ? (
+                            <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground p-8 animate-in fade-in duration-500">
+                               <div className="w-24 h-24 bg-accent/10 rounded-full flex items-center justify-center border-8 border-accent/20">
+                                 <Sparkles className="h-12 w-12 text-accent" />
+                               </div>
+                               <h2 className="text-2xl font-semibold">App Preview</h2>
+                               <p className="max-w-md text-center text-sm">
+                                    Your generated app will appear here. Describe your vision, click 'Generate App', and watch it come to life.
+                               </p>
+                            </div>
+                        ) : viewMode === 'preview' ? (
+                            <>
+                                <Button 
+                                    variant="ghost" 
+                                    size="icon" 
+                                    onClick={handleRefreshPreview} 
+                                    className="absolute top-2 right-2 z-10"
+                                    aria-label="Refresh preview"
+                                >
+                                    <RefreshCw className="h-4 w-4" />
+                                </Button>
+                                <iframe
+                                    srcDoc={generatedCode}
+                                    title="App Preview"
+                                    className="w-full h-full border-0 animate-in fade-in duration-500"
+                                    sandbox="allow-scripts allow-same-origin"
+                                    key={previewKey}
+                                />
+                            </>
+                        ) : (
+                            <ScrollArea className="h-full w-full bg-background rounded-xl">
+                                <pre className="p-4 font-code text-sm text-foreground">
+                                    <code>{generatedCode}</code>
+                                </pre>
+                            </ScrollArea>
+                        )}
                     </div>
-                ) : (
-                    <div className="p-4 md:p-6 flex flex-col h-full">
-                        <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-xl font-semibold">
-                                {viewMode === 'preview' ? 'App Preview' : 'Code View'}
-                            </h2>
-                             <Button variant="outline" onClick={() => setIsDrawingMode(true)}>
-                                <PenTool className="mr-2 h-4 w-4" />
-                                Draw an Idea
-                            </Button>
-                        </div>
-                        <div className="relative w-full flex-1 rounded-xl shadow-inner border border-border overflow-hidden bg-transparent">
-                            {isLoading && !isDrawingMode ? (
-                                <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground animate-in fade-in duration-500">
-                                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                                    <p className="text-lg font-semibold">Working on it...</p>
-                                    <p className="text-sm">The AI is thinking. This may take a moment.</p>
-                                </div>
-                            ) : !generatedCode ? (
-                                <div className="flex flex-col items-center justify-center h-full gap-4 text-muted-foreground p-8 animate-in fade-in duration-500">
-                                   <div className="w-24 h-24 bg-accent/10 rounded-full flex items-center justify-center border-8 border-accent/20">
-                                     <Sparkles className="h-12 w-12 text-accent" />
-                                   </div>
-                                   <h2 className="text-2xl font-semibold">App Preview</h2>
-                                   <p className="max-w-md text-center text-sm">
-                                        Your generated app will appear here. Describe your vision, click 'Generate App', and watch it come to life.
-                                   </p>
-                                </div>
-                            ) : viewMode === 'preview' ? (
-                                <>
-                                    <Button 
-                                        variant="ghost" 
-                                        size="icon" 
-                                        onClick={handleRefreshPreview} 
-                                        className="absolute top-2 right-2 z-10"
-                                        aria-label="Refresh preview"
-                                    >
-                                        <RefreshCw className="h-4 w-4" />
-                                    </Button>
-                                    <iframe
-                                        srcDoc={generatedCode}
-                                        title="App Preview"
-                                        className="w-full h-full border-0 animate-in fade-in duration-500"
-                                        sandbox="allow-scripts allow-same-origin"
-                                        key={previewKey}
-                                    />
-                                </>
-                            ) : (
-                                <ScrollArea className="h-full w-full bg-background rounded-xl">
-                                    <pre className="p-4 font-code text-sm text-foreground">
-                                        <code>{generatedCode}</code>
-                                    </pre>
-                                </ScrollArea>
-                            )}
-                        </div>
-                    </div>
-                )}
+                </div>
             </main>
         </div>
     );
