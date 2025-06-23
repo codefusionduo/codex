@@ -230,6 +230,12 @@ export default function NovaAppMakerPage() {
                             )}
                             {buttonText}
                         </Button>
+                        {generatedCode && mode === 'generate' && (
+                            <Button onClick={handleGenerate} variant="outline" disabled={isLoading || !description} className="w-full sm:w-auto">
+                                <RefreshCw className="mr-2 h-4 w-4" />
+                                Regenerate
+                            </Button>
+                        )}
                         <Button onClick={handleDownload} variant="outline" disabled={!generatedCode || isLoading} className="w-full sm:w-auto">
                             <Download className="mr-2 h-4 w-4" />
                             Download Code
