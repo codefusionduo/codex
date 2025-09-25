@@ -10,7 +10,6 @@ import { generateAppCode } from '@/ai/flows/generate-app-code';
 import { improveAppCode } from '@/ai/flows/improve-app-code';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function NovaAppMakerPage() {
     const [description, setDescription] = useState('');
@@ -19,7 +18,7 @@ export default function NovaAppMakerPage() {
     const [previewKey, setPreviewKey] = useState(0);
     const [mode, setMode] = useState<'generate' | 'improve'>('generate');
     const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
-    const [language, setLanguage] = useState('English');
+    const language = 'English'; // Hardcode language for now
     const { toast } = useToast();
 
     const handleGenerate = useCallback(async () => {
@@ -155,22 +154,6 @@ export default function NovaAppMakerPage() {
                             <Button variant="ghost" size="icon" onClick={() => setDescription('')} aria-label="Clear prompt" className="shrink-0">
                                 <RefreshCw className="h-4 w-4" />
                             </Button>
-                        </div>
-                        <div className="pt-4">
-                            <Select value={language} onValueChange={setLanguage}>
-                                <SelectTrigger className="w-full">
-                                    <SelectValue placeholder="Select language" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="English">English</SelectItem>
-                                    <SelectItem value="Spanish">Spanish</SelectItem>
-                                    <SelectItem value="French">French</SelectItem>
-                                    <SelectItem value="German">German</SelectItem>
-                                    <SelectItem value="Japanese">Japanese</SelectItem>
-                                    <SelectItem value="Chinese">Chinese</SelectItem>
-                                    <SelectItem value="Arabic">Arabic</SelectItem>
-                                </SelectContent>
-                            </Select>
                         </div>
                     </CardHeader>
                     <CardContent className="flex-1 flex">
