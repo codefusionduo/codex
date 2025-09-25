@@ -131,8 +131,13 @@ export default function NovaAppMakerPage() {
         <div className="grid md:grid-cols-2 lg:grid-cols-[minmax(400px,_1fr)_2fr] h-dvh bg-background text-foreground">
             <aside className="p-4 md:p-6 flex flex-col gap-6 overflow-y-auto border-r border-border h-full">
                 <header className="flex items-center gap-3">
-                    <div className="bg-primary text-primary-foreground p-2 rounded-lg">
-                        <Code2 className="h-6 w-6" />
+                    <div className="relative w-12 h-12 flex items-center justify-center">
+                        <span className="text-5xl font-extrabold tracking-tighter bg-gradient-to-br from-gray-700 via-gray-900 to-black bg-clip-text text-transparent">
+                        X
+                        </span>
+                        <span className="absolute inset-0 flex items-center justify-center text-white text-[10px] tracking-[0.2rem] font-semibold">
+                        C O D E
+                        </span>
                     </div>
                     <h1 className="text-2xl font-bold font-headline">Nova App Maker</h1>
                 </header>
