@@ -139,7 +139,7 @@ export default function NovaAppMakerPage() {
                         C O D E
                         </span>
                     </div>
-                    <h1 className="text-2xl font-bold font-headline">Nova App Maker</h1>
+                    <h1 className="text-2xl font-bold font-headline">codeX</h1>
                 </header>
 
                 <Tabs value={mode} onValueChange={handleModeChange} className="w-full">

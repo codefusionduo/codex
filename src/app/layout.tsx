@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Nova App Maker',
+  title: 'codeX',
   description: 'Generate apps from text descriptions using AI',
 };
 
