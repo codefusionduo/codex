@@ -14,6 +14,7 @@ import {z} from 'genkit';
 const ImproveAppCodeInputSchema = z.object({
   appDescription: z.string().describe('A description of the desired app.'),
   currentCode: z.string().describe('The current app code to be improved.'),
+  language: z.string().describe('The preferred human language for the app content.'),
 });
 export type ImproveAppCodeInput = z.infer<typeof ImproveAppCodeInputSchema>;
 
@@ -33,6 +34,7 @@ const improveAppCodePrompt = ai.definePrompt({
   prompt: `You are an AI code assistant that improves existing code based on a text description of the app.
 
   Given the following app description and current code, improve the code to better match the description.
+  The user has specified that the app should be in '{{{language}}}'. Please make sure your improvements respect this, and that all new user-facing text is in this language.
 
   App Description: {{{appDescription}}}
 

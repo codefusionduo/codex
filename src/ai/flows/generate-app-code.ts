@@ -13,6 +13,7 @@ import {z} from 'genkit';
 
 const GenerateAppCodeInputSchema = z.object({
   appDescription: z.string().describe('A text description of the app to generate.'),
+  language: z.string().describe('The preferred human language for the app content.'),
 });
 export type GenerateAppCodeInput = z.infer<typeof GenerateAppCodeInputSchema>;
 
@@ -31,7 +32,10 @@ const generateAppCodePrompt = ai.definePrompt({
   output: {schema: GenerateAppCodeOutputSchema},
   prompt: `You are an AI code generator that specializes in creating Next.js applications based on user descriptions.
 
-  Please generate the Next.js code for an app that matches the following description:
+  Please generate the Next.js code for an app that matches the following description.
+  The user has specified that the app should be in '{{{language}}}'. Please generate all user-facing text in this language.
+
+  Description:
   {{{appDescription}}}
 
   The code should be a single, complete HTML file with all necessary code, including inline JavaScript and CSS.

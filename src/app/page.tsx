@@ -10,6 +10,7 @@ import { generateAppCode } from '@/ai/flows/generate-app-code';
 import { improveAppCode } from '@/ai/flows/improve-app-code';
 import { useToast } from '@/hooks/use-toast';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 export default function NovaAppMakerPage() {
     const [description, setDescription] = useState('');
@@ -18,6 +19,7 @@ export default function NovaAppMakerPage() {
     const [previewKey, setPreviewKey] = useState(0);
     const [mode, setMode] = useState<'generate' | 'improve'>('generate');
     const [viewMode, setViewMode] = useState<'preview' | 'code'>('preview');
+    const [language, setLanguage] = useState('English');
     const { toast } = useToast();
 
     const handleGenerate = useCallback(async () => {
@@ -32,7 +34,7 @@ export default function NovaAppMakerPage() {
         setIsLoading(true);
         setGeneratedCode(''); // Clear previous preview
         try {
-            const result = await generateAppCode({ appDescription: description });
+            const result = await generateAppCode({ appDescription: description, language });
             setGeneratedCode(result.appCode);
             setPreviewKey(prev => prev + 1);
             setViewMode('preview');
@@ -46,7 +48,7 @@ export default function NovaAppMakerPage() {
         } finally {
             setIsLoading(false);
         }
-    }, [description, toast]);
+    }, [description, language, toast]);
 
     const handleImprove = useCallback(async () => {
         if (!description.trim()) {
@@ -67,7 +69,7 @@ export default function NovaAppMakerPage() {
         }
         setIsLoading(true);
         try {
-            const result = await improveAppCode({ appDescription: description, currentCode: generatedCode });
+            const result = await improveAppCode({ appDescription: description, currentCode: generatedCode, language });
             setGeneratedCode(result.improvedCode);
             setPreviewKey(prev => prev + 1);
             setViewMode('preview');
@@ -81,7 +83,7 @@ export default function NovaAppMakerPage() {
         } finally {
             setIsLoading(false);
         }
-    }, [description, generatedCode, toast]);
+    }, [description, generatedCode, language, toast]);
 
     const handleDownload = useCallback(() => {
         if (!generatedCode) return;
@@ -144,14 +146,32 @@ export default function NovaAppMakerPage() {
                 </Tabs>
 
                 <Card className="flex flex-col shadow-sm flex-1">
-                    <CardHeader className="flex flex-row items-start justify-between">
-                        <div className="space-y-1.5">
-                            <CardTitle>{cardTitle}</CardTitle>
-                            <CardDescription>{cardDescriptionText}</CardDescription>
+                    <CardHeader>
+                        <div className="flex flex-row items-start justify-between">
+                            <div className="space-y-1.5">
+                                <CardTitle>{cardTitle}</CardTitle>
+                                <CardDescription>{cardDescriptionText}</CardDescription>
+                            </div>
+                            <Button variant="ghost" size="icon" onClick={() => setDescription('')} aria-label="Clear prompt" className="shrink-0">
+                                <RefreshCw className="h-4 w-4" />
+                            </Button>
                         </div>
-                        <Button variant="ghost" size="icon" onClick={() => setDescription('')} aria-label="Clear prompt" className="shrink-0">
-                            <RefreshCw className="h-4 w-4" />
-                        </Button>
+                        <div className="pt-4">
+                            <Select value={language} onValueChange={setLanguage}>
+                                <SelectTrigger className="w-full">
+                                    <SelectValue placeholder="Select language" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="English">English</SelectItem>
+                                    <SelectItem value="Spanish">Spanish</SelectItem>
+                                    <SelectItem value="French">French</SelectItem>
+                                    <SelectItem value="German">German</SelectItem>
+                                    <SelectItem value="Japanese">Japanese</SelectItem>
+                                    <SelectItem value="Chinese">Chinese</SelectItem>
+                                    <SelectItem value="Arabic">Arabic</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
                     </CardHeader>
                     <CardContent className="flex-1 flex">
                         <Textarea
