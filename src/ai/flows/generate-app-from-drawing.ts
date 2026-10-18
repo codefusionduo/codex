@@ -67,7 +67,15 @@ const generateAppFromDrawingFlow = ai.defineFlow(
     },
   },
   async input => {
-    const {output} = await generateAppFromDrawingPrompt(input);
-    return output!;
+    try {
+      const {output} = await generateAppFromDrawingPrompt(input);
+      if (!output) {
+        throw new Error('AI drawing-to-code generation produced no output.');
+      }
+      return output;
+    } catch (error) {
+      console.error('Error during generateAppFromDrawing flow:', error);
+      throw error;
+    }
   }
 );

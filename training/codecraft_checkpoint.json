@@ -1,0 +1,29 @@
+{
+  "model_name": "CodeCraft-AI-v1.0",
+  "parent_company": "Suku",
+  "model_parameters": "1.1 Billion (1.1B / 110 Crore)",
+  "total_parameters_count": 1124000000,
+  "architecture": {
+    "layers": 24,
+    "hidden_size": 2048,
+    "attention_heads": 16,
+    "context_window": 8192,
+    "vocab_size": 32000,
+    "precision": "FP16 / INT4 Quantized"
+  },
+  "trained_at": "2026-10-18T14:10:55.491803",
+  "total_lines_of_code": 23751193,
+  "pure_codes_only_lines": 23751193,
+  "total_samples": 6999,
+  "epochs": 5,
+  "final_loss": 0.0252,
+  "accuracy_pct": 99.15,
+  "status": "ready_for_inference",
+  "capabilities": [
+    "Tailwind CSS Responsive UI Generation",
+    "Lucide Icon Integration",
+    "Full Standalone HTML5 Single-File Apps",
+    "Client-Side State & LocalStorage Persistence",
+    "Interactive JS Event Handlers & Zero Placeholders"
+  ]
+}

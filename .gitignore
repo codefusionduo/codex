@@ -40,6 +40,11 @@ next-env.d.ts
 .genkit/*
 .env*
 
-# firebase
-firebase-debug.log
-firestore-debug.log
+# Large training dataset files (>100MB exceeds GitHub limit)
+training/codecraft_dataset.json
+training/codes_only.json
+training/dataset.json
+training/*.gz
+training/*.zip
+__pycache__/
+*.pyc

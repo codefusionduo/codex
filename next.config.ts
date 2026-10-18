@@ -1,6 +1,7 @@
 import type {NextConfig} from 'next';
 
 const nextConfig: NextConfig = {
+  output: 'standalone',
   /* config options here */
   typescript: {
     ignoreBuildErrors: true,
@@ -8,8 +9,10 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
-  serverActions: {
-    bodySizeLimit: '4mb',
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '4mb',
+    },
   },
   images: {
     remotePatterns: [

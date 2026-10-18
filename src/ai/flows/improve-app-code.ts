@@ -1,20 +1,12 @@
 'use server';
 
-/**
- * @fileOverview AI flow to improve existing app code based on a text description.
- *
- * - improveAppCode - Function to improve app code.
- * - ImproveAppCodeInput - Input type for the improveAppCode function.
- * - ImproveAppCodeOutput - Return type for the improveAppCode function.
- */
-
-import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import { z } from 'genkit';
+import { generateSukuApp, logTrainingPair } from '@/lib/suku-engine';
 
 const ImproveAppCodeInputSchema = z.object({
   appDescription: z.string().describe('A description of the desired app.'),
   currentCode: z.string().describe('The current app code to be improved.'),
-  language: z.string().describe('The preferred human language for the app content.'),
+  language: z.string().optional().describe('The preferred human language for the app content.'),
 });
 export type ImproveAppCodeInput = z.infer<typeof ImproveAppCodeInputSchema>;
 
@@ -24,44 +16,19 @@ const ImproveAppCodeOutputSchema = z.object({
 export type ImproveAppCodeOutput = z.infer<typeof ImproveAppCodeOutputSchema>;
 
 export async function improveAppCode(input: ImproveAppCodeInput): Promise<ImproveAppCodeOutput> {
-  return improveAppCodeFlow(input);
+  const result = await generateSukuApp({
+    appDescription: `${input.appDescription} (Improving previous version)`,
+    language: input.language,
+    currentCode: input.currentCode,
+  });
+
+  logTrainingPair(
+    `Improve request: ${input.appDescription}`,
+    result.appCode,
+    'code_improvement'
+  );
+
+  return {
+    improvedCode: result.appCode,
+  };
 }
-
-const improveAppCodePrompt = ai.definePrompt({
-  name: 'improveAppCodePrompt',
-  input: {schema: ImproveAppCodeInputSchema},
-  output: {schema: ImproveAppCodeOutputSchema},
-  prompt: `You are an AI code assistant that improves existing code based on a text description of the app.
-
-  Given the following app description and current code, improve the code to better match the description.
-  The user has specified that the app should be in '{{{language}}}'. Please make sure your improvements respect this, and that all new user-facing text is in this language.
-
-  App Description: {{{appDescription}}}
-
-  Current Code:
-  \`\`\`
-  {{{currentCode}}}
-  \`\`\`
-
-  Improved Code:
-  `,
-});
-
-const improveAppCodeFlow = ai.defineFlow(
-  {
-    name: 'improveAppCodeFlow',
-    inputSchema: ImproveAppCodeInputSchema,
-    outputSchema: ImproveAppCodeOutputSchema,
-    retry: {
-      maxAttempts: 5,
-      backoff: {
-        delay: '1s',
-        multiplier: 2,
-      },
-    },
-  },
-  async input => {
-    const {output} = await improveAppCodePrompt(input);
-    return output!;
-  }
-);

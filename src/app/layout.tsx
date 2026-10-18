@@ -3,8 +3,20 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'codeX',
-  description: 'Generate apps from text descriptions using AI',
+  title: 'CodeCraft AI — Smart AI Web App Studio',
+  description: 'Generate and iterate on web applications instantly from text descriptions using AI',
+  icons: {
+    icon: [
+      { url: '/favicon.ico', sizes: 'any' },
+      { url: '/favicon.png', type: 'image/png' },
+    ],
+    apple: '/apple-icon.png',
+  },
+  openGraph: {
+    title: 'CodeCraft AI — Smart AI Web App Studio',
+    description: 'Generate and iterate on web applications instantly from text descriptions using AI',
+    images: ['/logo.jpg'],
+  },
 };
 
 export default function RootLayout({

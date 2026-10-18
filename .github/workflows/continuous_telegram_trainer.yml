@@ -1,0 +1,39 @@
+name: CodeCraft 24/7 Cloud Continuous Trainer
+
+on:
+  schedule:
+    # Runs automatically every 30 minutes in GitHub Cloud (even when PC is powered off)
+    - cron: '*/30 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub UI anytime
+
+permissions:
+  contents: write
+
+jobs:
+  train-and-sync-telegram:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout CodeCraft Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run CodeCraft 10,000 Lakh Lines Continuous Pipeline
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || '8469994558:AAH_Hr4pxr1nTnMuRKXzBIOgUVrYqo3dQ10' }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID || '-1004335144643' }}
+        run: |
+          python training/continuous_trainer.py --single-run --batch-lines 1000000
+
+      - name: Commit & Push Updated Checkpoint and State
+        run: |
+          git config --local user.email "codecraft-bot@sukulabs.ai"
+          git config --local user.name "CodeCraft Cloud AI"
+          git add training/continuous_state.json training/codecraft_checkpoint.json
+          git commit -m "Auto-Update: CodeCraft 10,000 Lakh Lines Pipeline [skip ci]" || echo "No changes to commit"
+          git push || echo "Push skipped or branch protected"

@@ -1,0 +1,8 @@
+{
+  "bot_token": "8469994558:AAH_Hr4pxr1nTnMuRKXzBIOgUVrYqo3dQ10",
+  "chat_id": "-1004335144643",
+  "enabled": true,
+  "send_dataset_file": true,
+  "notify_on_training_complete": true,
+  "notify_on_new_sample": true
+}
