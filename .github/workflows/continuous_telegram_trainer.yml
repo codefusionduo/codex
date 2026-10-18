@@ -28,7 +28,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN || '8469994558:AAH_Hr4pxr1nTnMuRKXzBIOgUVrYqo3dQ10' }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID || '-1004335144643' }}
         run: |
-          python training/continuous_trainer.py --single-run --batch-lines 1000000
+          python training/continuous_trainer.py --batches 25 --delay 25 --batch-lines 1000000
 
       - name: Commit & Push Updated Checkpoint and State
         run: |

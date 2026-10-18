@@ -201,33 +201,41 @@ def generate_and_dispatch_batch(batch_lines=DEFAULT_BATCH_LINES):
 
     return state
 
-def run_daemon(batch_lines=DEFAULT_BATCH_LINES, delay_seconds=60):
-    """Run continuously in an infinite background loop."""
+def run_daemon(batch_lines=DEFAULT_BATCH_LINES, delay_seconds=60, max_batches=None):
+    """Run continuously in background or for a set number of batches."""
     print("=" * 70)
     print("   [+] CODECRAFT CONTINUOUS TRAINING DAEMON STARTED")
     print(f"   Target:      10,000 Lakh Lines (1,000,000,000 lines)")
     print(f"   Batch Size:  {batch_lines:,} lines per batch")
     print(f"   Interval:    {delay_seconds} seconds between batches")
+    if max_batches:
+        print(f"   Limit:       {max_batches} batches for this run")
     print("   Format:      Pure Code Only (JSON format)")
     print("=" * 70)
 
     # Initial announcement
     cfg = load_telegram_config()
     start_msg = (
-        "🤖 <b>CodeCraft AI 10,000 Lakh Lines Continuous Pipeline Started!</b>\n\n"
-        "⚡ <b>Mode:</b> 24/7 Autonomous Code Batch Generation & Neural Training\n"
+        "🤖 <b>CodeCraft AI 10,000 Lakh Lines Continuous Pipeline Active!</b>\n\n"
+        "⚡ <b>Mode:</b> Autonomous Code Batch Generation & Neural Training\n"
         "🎯 <b>Target Goal:</b> 10,000 Lakh lines (1,000,000,000 lines)\n"
         "📦 <b>Batch Frequency:</b> Every minute\n"
         "Pure code batches will be sent here automatically!"
     )
     send_telegram_message(start_msg)
 
+    batches_done = 0
     while True:
         try:
             state = generate_and_dispatch_batch(batch_lines)
+            batches_done += 1
             if state["cumulative_lines"] >= TARGET_GOAL_LINES:
                 print("\n[🎉] TARGET OF 10,000 LAKH LINES (1 BILLION LINES) ACHIEVED!")
                 send_telegram_message("🏆 <b>10,000 LAKH (1 BILLION) LINES TARGET ACHIEVED!</b>")
+                break
+
+            if max_batches and batches_done >= max_batches:
+                print(f"\n[+] Completed requested {max_batches} batches successfully.")
                 break
                 
             print(f"[*] Sleeping for {delay_seconds}s before next batch...")
@@ -245,12 +253,15 @@ if __name__ == "__main__":
     # Custom delay or batch size flags
     delay = 60
     batch_sz = DEFAULT_BATCH_LINES
+    batches_limit = None
     
     for i, a in enumerate(args):
         if a == "--delay" and i + 1 < len(args):
             delay = int(args[i + 1])
         elif a == "--batch-lines" and i + 1 < len(args):
             batch_sz = int(args[i + 1])
+        elif a == "--batches" and i + 1 < len(args):
+            batches_limit = int(args[i + 1])
             
     if "--status" in args:
         st = load_continuous_state()
@@ -265,4 +276,4 @@ if __name__ == "__main__":
         generate_and_dispatch_batch(batch_sz)
     else:
         # Default daemon mode
-        run_daemon(batch_lines=batch_sz, delay_seconds=delay)
+        run_daemon(batch_lines=batch_sz, delay_seconds=delay, max_batches=batches_limit)
