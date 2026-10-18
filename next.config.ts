@@ -9,6 +9,13 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  serverExternalPackages: [
+    'handlebars',
+    'genkit',
+    '@genkit-ai/core',
+    '@genkit-ai/googleai',
+    '@opentelemetry/sdk-node',
+  ],
   experimental: {
     serverActions: {
       bodySizeLimit: '4mb',

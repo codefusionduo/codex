@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: codex-codecraft
+    runtime: node
+    plan: free
+    region: oregon
+    branch: master
+    buildCommand: npm install && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: NEXT_TELEMETRY_DISABLED
+        value: 1
+      - key: TELEGRAM_BOT_TOKEN
+        value: 8469994558:AAH_Hr4pxr1nTnMuRKXzBIOgUVrYqo3dQ10
+      - key: TELEGRAM_CHAT_ID
+        value: -1004335144643
