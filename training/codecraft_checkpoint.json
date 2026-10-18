@@ -11,9 +11,9 @@
     "vocab_size": 32000,
     "precision": "FP16 / INT4 Quantized"
   },
-  "trained_at": "2026-10-18T21:23:32.632289",
-  "total_lines_of_code": 147894355,
-  "pure_codes_only_lines": 147894355,
+  "trained_at": "2026-10-18T23:37:33.979913",
+  "total_lines_of_code": 173126705,
+  "pure_codes_only_lines": 173126705,
   "total_samples": 6999,
   "epochs": 5,
   "final_loss": 0.012,
