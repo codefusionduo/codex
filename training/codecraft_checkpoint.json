@@ -11,13 +11,13 @@
     "vocab_size": 32000,
     "precision": "FP16 / INT4 Quantized"
   },
-  "trained_at": "2026-10-18T16:29:24.784255",
-  "total_lines_of_code": 97429655,
-  "pure_codes_only_lines": 97429655,
+  "trained_at": "2026-10-18T18:56:21.582341",
+  "total_lines_of_code": 122662005,
+  "pure_codes_only_lines": 122662005,
   "total_samples": 6999,
   "epochs": 5,
   "final_loss": 0.012,
-  "accuracy_pct": 99.79,
+  "accuracy_pct": 99.8,
   "status": "ready_for_inference",
   "capabilities": [
     "Tailwind CSS Responsive UI Generation",
