@@ -11,13 +11,13 @@
     "vocab_size": 32000,
     "precision": "FP16 / INT4 Quantized"
   },
-  "trained_at": "2026-10-18T19:50:20.973752",
-  "total_lines_of_code": 72197305,
-  "pure_codes_only_lines": 72197305,
-  "total_samples": 6999,
+  "trained_at": "2026-10-19T19:41:22.308039",
+  "trained_lines_in_this_session": 1000060,
+  "pure_codes_only_lines": 237721521,
+  "total_samples": 2308,
   "epochs": 5,
   "final_loss": 0.012,
-  "accuracy_pct": 99.76,
+  "accuracy_pct": 99.8,
   "status": "ready_for_inference",
   "capabilities": [
     "Tailwind CSS Responsive UI Generation",
@@ -25,5 +25,6 @@
     "Full Standalone HTML5 Single-File Apps",
     "Client-Side State & LocalStorage Persistence",
     "Interactive JS Event Handlers & Zero Placeholders"
-  ]
+  ],
+  "total_lines_of_code": 237721521
 }

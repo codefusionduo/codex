@@ -145,22 +145,38 @@ def generate_and_dispatch_batch(batch_lines=DEFAULT_BATCH_LINES):
     filled = min(bar_len, int((progress_pct / 100.0) * bar_len))
     bar = "■" * filled + "□" * (bar_len - filled)
 
+    # Generate readable sample HTML file and live code preview
+    import html
+    sample_app_code = "\n".join(samples[0]["code"])
+    code_preview = "\n".join(samples[0]["code"][:20])
+    escaped_code = html.escape(code_preview)
+
     caption = (
-        f"🚀 <b>CodeCraft AI — 10,000 Lakh Lines Continuous Pipeline</b>\n"
+        f"🚀 <b>CodeCraft AI — Continuous Pipeline (Batch #{batch_num})</b>\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"🏢 <b>Ecosystem:</b> Suku Labs\n"
-        f"📦 <b>Batch:</b> <code>#{batch_num:,}</code>\n"
-        f"📜 <b>Batch Code Lines:</b> <code>{total_batch_lines:,}</code> lines (Pure Code JSON)\n"
-        f"⚡ <b>Batch Apps:</b> <code>{len(samples):,}</code> complete applications\n"
-        f"📈 <b>Total Cumulative Lines:</b> <code>{new_cumulative:,}</code> ({cum_lakh:,.1f} Lakh lines)\n"
-        f"🎯 <b>Target Goal:</b> <code>1,000,000,000</code> lines (10,000 Lakh lines)\n"
-        f"📊 <b>Overall Progress:</b> <code>[{bar}] {progress_pct:.4f}%</code>\n"
-        f"🧠 <b>Model Accuracy:</b> <b>{accuracy:.2f}%</b> | <b>Loss:</b> <code>{loss:.4f}</code>\n"
-        f"🕒 <b>Timestamp:</b> {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n"
+        f"📜 <b>Batch Lines:</b> <code>{total_batch_lines:,}</code> lines | <b>Apps:</b> <code>{len(samples):,}</code>\n"
+        f"📈 <b>Cumulative Lines:</b> <code>{new_cumulative:,}</code> ({cum_lakh:,.1f} Lakh lines)\n"
+        f"📊 <b>Progress:</b> <code>[{bar}] {progress_pct:.4f}%</code> of 10,000 Lakh\n"
+        f"🧠 <b>Accuracy:</b> <b>{accuracy:.2f}%</b> | <b>Loss:</b> <code>{loss:.4f}</code>\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"📁 <i>Attached: Compressed Pure Code JSON Batch</i>"
+        f"💻 <b>Live Code Preview (Inside Chat):</b>\n"
+        f"<pre><code class=\"language-html\">{escaped_code}\n...</code></pre>\n"
+        f"🕒 <i>{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</i>"
     )
 
+    # 1. Send readable .html file (user can tap to view/run code directly on phone)
+    sample_html_file = os.path.join(TRAINING_DIR, f"codecraft_batch{batch_num:03d}_app.html")
+    with open(sample_html_file, "w", encoding="utf-8") as f:
+        f.write(sample_app_code)
+        
+    print("[*] Sending readable .html app file to Telegram...")
+    send_telegram_document(sample_html_file, caption=f"📄 <b>Live App #{batch_num} Code File</b> (Tap to view full code)")
+    try:
+        os.remove(sample_html_file)
+    except Exception:
+        pass
+
+    # 2. Dispatch batch dataset document to Telegram
     print("[*] Dispatching batch document to Telegram...")
     doc_success, doc_res = send_telegram_document(batch_filepath, caption=caption)
     
