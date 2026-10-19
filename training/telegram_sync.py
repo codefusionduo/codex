@@ -157,11 +157,12 @@ def send_telegram_document(file_path, caption=""):
         body.extend(f'Content-Disposition: form-data; name="chat_id"\r\n\r\n'.encode('utf-8'))
         body.extend(f"{chat_id}\r\n".encode('utf-8'))
 
-        # Add caption field if provided
+        # Add caption field if provided (Telegram limit is 1024 chars)
         if caption:
+            safe_caption = caption[:1020]
             body.extend(f"--{boundary}\r\n".encode('utf-8'))
             body.extend(f'Content-Disposition: form-data; name="caption"\r\n\r\n'.encode('utf-8'))
-            body.extend(f"{caption}\r\n".encode('utf-8'))
+            body.extend(f"{safe_caption}\r\n".encode('utf-8'))
             
             body.extend(f"--{boundary}\r\n".encode('utf-8'))
             body.extend(f'Content-Disposition: form-data; name="parse_mode"\r\n\r\n'.encode('utf-8'))

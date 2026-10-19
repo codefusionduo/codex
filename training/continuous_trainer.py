@@ -151,18 +151,22 @@ def generate_and_dispatch_batch(batch_lines=DEFAULT_BATCH_LINES):
     code_preview = "\n".join(samples[0]["code"][:20])
     escaped_code = html.escape(code_preview)
 
-    caption = (
-        f"🚀 <b>CodeCraft AI — Continuous Pipeline (Batch #{batch_num})</b>\n"
+    # Format live code message for Telegram chat
+    code_message = (
+        f"🚀 <b>CodeCraft AI — Batch #{batch_num:,} Live Code Stream</b>\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"📜 <b>Batch Lines:</b> <code>{total_batch_lines:,}</code> lines | <b>Apps:</b> <code>{len(samples):,}</code>\n"
+        f"📜 <b>Batch Code:</b> <code>{total_batch_lines:,}</code> lines | <b>Apps:</b> <code>{len(samples):,}</code>\n"
         f"📈 <b>Cumulative Lines:</b> <code>{new_cumulative:,}</code> ({cum_lakh:,.1f} Lakh lines)\n"
         f"📊 <b>Progress:</b> <code>[{bar}] {progress_pct:.4f}%</code> of 10,000 Lakh\n"
         f"🧠 <b>Accuracy:</b> <b>{accuracy:.2f}%</b> | <b>Loss:</b> <code>{loss:.4f}</code>\n"
         f"━━━━━━━━━━━━━━━━━━━━\n"
-        f"💻 <b>Live Code Preview (Inside Chat):</b>\n"
+        f"💻 <b>Live Code Preview (Batch #{batch_num:,}):</b>\n"
         f"<pre><code class=\"language-html\">{escaped_code}\n...</code></pre>\n"
         f"🕒 <i>{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</i>"
     )
+
+    print("[*] Dispatching live code message to Telegram...")
+    send_telegram_message(code_message)
 
     # 1. Send readable .html file (user can tap to view/run code directly on phone)
     sample_html_file = os.path.join(TRAINING_DIR, f"codecraft_batch{batch_num:03d}_app.html")
@@ -170,22 +174,25 @@ def generate_and_dispatch_batch(batch_lines=DEFAULT_BATCH_LINES):
         f.write(sample_app_code)
         
     print("[*] Sending readable .html app file to Telegram...")
-    send_telegram_document(sample_html_file, caption=f"📄 <b>Live App #{batch_num} Code File</b> (Tap to view full code)")
+    send_telegram_document(sample_html_file, caption=f"📄 <b>Live App #{batch_num} HTML Code File</b> (Tap to open)")
     try:
         os.remove(sample_html_file)
     except Exception:
         pass
 
-    # 2. Dispatch batch dataset document to Telegram
+    # 2. Dispatch batch dataset document to Telegram with concise caption
+    doc_caption = (
+        f"📦 <b>Batch #{batch_num:,} Pure Code Dataset</b>\n"
+        f"📜 {total_batch_lines:,} lines | 📈 Total: {cum_lakh:,.1f} Lakh lines\n"
+        f"🎯 Acc: {accuracy:.2f}% | Loss: {loss:.4f}"
+    )
     print("[*] Dispatching batch document to Telegram...")
-    doc_success, doc_res = send_telegram_document(batch_filepath, caption=caption)
+    doc_success, doc_res = send_telegram_document(batch_filepath, caption=doc_caption)
     
     if doc_success:
         print(f"[SUCCESS] Batch #{batch_num} sent to Telegram!")
     else:
-        print(f"[-] Telegram dispatch error: {doc_res}")
-        # Send text notification fallback if document failed
-        send_telegram_message(caption)
+        print(f"[-] Telegram dispatch note: {doc_res}")
 
     # Clean up local compressed file to keep disk light
     try:
