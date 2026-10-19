@@ -11,9 +11,9 @@
     "vocab_size": 32000,
     "precision": "FP16 / INT4 Quantized"
   },
-  "trained_at": "2026-10-19T19:43:09.055195",
+  "trained_at": "2026-10-19T14:26:42.211880",
   "trained_lines_in_this_session": 1000060,
-  "pure_codes_only_lines": 240749403,
+  "pure_codes_only_lines": 265981753,
   "total_samples": 2308,
   "epochs": 5,
   "final_loss": 0.012,
@@ -26,5 +26,5 @@
     "Client-Side State & LocalStorage Persistence",
     "Interactive JS Event Handlers & Zero Placeholders"
   ],
-  "total_lines_of_code": 240749403
+  "total_lines_of_code": 265981753
 }
