@@ -1,8 +1,8 @@
 {
-  "batch_number": 781,
-  "cumulative_lines": 789805339,
+  "batch_number": 806,
+  "cumulative_lines": 815037689,
   "target_lines": 1000000000,
-  "total_batches_sent": 780,
-  "last_sync": "2026-10-22T20:53:58.876823",
+  "total_batches_sent": 805,
+  "last_sync": "2026-10-23T00:00:13.006315",
   "active": true
 }
